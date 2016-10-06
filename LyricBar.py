@@ -15,7 +15,7 @@ import time
 class LyricBar:
     def __init__(self):
         self.counter = 0 
-        self.currentLine = None
+        self.currentLine = ""
         self.lyricsPath = Settings().getSettings()['lyrics path']
 
         dbus_loop = DBusGMainLoop()
