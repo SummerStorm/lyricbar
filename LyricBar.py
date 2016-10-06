@@ -153,7 +153,7 @@ class LyricBar:
         Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD).set_text(self.currentLine, -1)
 
     def openLyricsFile(self, dummy):
-        RunThread(['gedit', self.currentFile]).start()
+        RunThread(['xdg-open', self.currentFile]).start()
 
     ConverterCommand = ['scala', "-cp", "~/workspace/lyric-matcher/target/scala-2.11/classes", "matcher.LyricConverter"]
     def runConverter(self, dummy):
