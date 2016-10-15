@@ -2,12 +2,12 @@
 
 from gi.repository import Gtk, GLib, Gdk
 from gi.repository import AppIndicator3 as appindicator
+from urllib.parse import unquote 
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 import pympris
 from threading import Timer, Thread
 from os.path import join, exists
-from Settings import Settings
 from LrcParser import LrcParser
 import subprocess
 import time
@@ -16,7 +16,6 @@ class LyricBar:
     def __init__(self):
         self.counter = 0 
         self.currentLine = ""
-        self.lyricsPath = Settings().getSettings()['lyrics path']
 
         dbus_loop = DBusGMainLoop()
         self.bus = dbus.SessionBus(mainloop=dbus_loop)
@@ -43,12 +42,6 @@ class LyricBar:
             self.displayLine("No music players active.")
             GLib.timeout_add(500, self.handlerCheckPlayer)
             
-    def getLyricsFile(self, artist, title):
-        result = join(self.lyricsPath, artist, artist + ' - ' + title + '.lrc')
-        for illegal in ["*", "?", ":"]:
-            result = result.replace(illegal, "_")
-        return result
- 
     # =============================== MPRIS2 Part ===============================      
     def handlerCheckPlayer(self):
         if self.isValidPlayersRunning():
@@ -95,13 +88,14 @@ class LyricBar:
         if not 'Metadata' in changed_props:
             return
         metadata = changed_props['Metadata']
-        if not 'xesam:artist' in metadata or not 'xesam:title' in metadata:
-            self.displayLine("This song is missing its artist or title metadata")
+        if 'xesam:url' not in metadata:
+            self.displayLine("This song is missing its song file url metadata")
             return
         self.paused = False
-        artist = metadata['xesam:artist'][0]
-        title = metadata['xesam:title']
-        newFile = self.getLyricsFile(artist, title)
+        newFile = metadata['xesam:url']
+        newFile = newFile[len("file://"):]
+        newFile = unquote(newFile)[:-4] + ".lrc"
+        #newFile = self.getLyricsFile(artist, title)
         if not self.currentFile or self.currentFile != newFile:
             self.openItem.set_label("Open lyrics file")
             self.openItem.show()
