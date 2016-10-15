@@ -170,15 +170,6 @@ class LyricBar:
     def main(self):
         Gtk.main()
 
-# Work in Progress
-class DeadmanSwitchThread(Thread):
-    def __init__(self, lyricbar, time):
-        Thread.__init__(self)
-        self.lyricbar = lyricbar
-        
-    def run(self):
-        pass
- 
 class SeekThread(Thread):
     def __init__(self, lyricbar, time):
         Thread.__init__(self)
