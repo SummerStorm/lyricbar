@@ -12,7 +12,6 @@ class LrcParser:
         print(lines[0])
         print(offset)
         for line in lines[1:]:
-            # [01:44.53]When I take a step into the darkness　
             tokens = line.split("]")
             timePart = tokens[0][1:]
             headTokens = timePart.split(":")
@@ -26,10 +25,3 @@ class LrcParser:
                 line = " "
             output.append((time / 1000.0, line))
         return output
-
-if __name__ == "__main__":
-    testFile = "/home/user/Lyrics/高垣彩陽/高垣彩陽 - Meteor Light.lrc"
-    testFile = "/home/user/Lyrics/KOTOKO/KOTOKO - Unite + reactioN.lrc"
-    lines = LrcParser.load(testFile)
-    for line in lines:
-        print(line)
