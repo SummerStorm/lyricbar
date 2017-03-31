@@ -35,7 +35,7 @@ class LyricBar:
         self.playerSetup()
 
     def playerSetup(self):
-        if self.isValidPlayersRunning():
+        if self.getPlayers():
             self.setupMediaPlayer()
             self.displayLine("Waiting for song change.")
         else:
@@ -44,7 +44,7 @@ class LyricBar:
             
     # =============================== MPRIS2 Part ===============================      
     def handlerCheckPlayer(self):
-        if self.isValidPlayersRunning():
+        if self.getPlayers():
             self.setupMediaPlayer()
             self.displayLine("Waiting for song change.")
             return False  # deregister the handler
@@ -53,9 +53,6 @@ class LyricBar:
        
     def getPlayers(self):
         return [ str(self.bus.get_name_owner(x)) for x in self.bus.list_names() if x.startswith("org.mpris.MediaPlayer2") ]
-
-    def isValidPlayersRunning(self): 
-        return not not self.getPlayers()
 
     def setupMediaPlayer(self): 
         mediaplayer = pympris.MediaPlayer(self.getPlayers()[0], self.bus)
