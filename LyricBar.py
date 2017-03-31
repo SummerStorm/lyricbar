@@ -7,7 +7,7 @@ import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 import pympris
 from threading import Timer, Thread
-from os.path import join, exists
+from os.path
 from LrcParser import LrcParser
 import subprocess
 import time
@@ -195,7 +195,7 @@ class LyricThread(Thread):
         
     def run(self):
         self.lyricbar.clearAllPendingTimers()
-        if not exists(self.lyricbar.currentFile):
+        if not os.path.isfile(self.lyricbar.currentFile):
             self.lyricbar.displayLine(self.lyricbar.currentFile + " not found!")
         else:
             self.lyricbar.displayLine(" ")
