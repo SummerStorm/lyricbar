@@ -7,7 +7,6 @@ import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 import pympris
 from threading import Timer, Thread
-from os.path
 from LrcParser import LrcParser
 import subprocess
 import time
