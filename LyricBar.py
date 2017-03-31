@@ -147,11 +147,11 @@ class LyricBar:
         Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD).set_text(self.currentLine, -1)
 
     def openLyricsFile(self, dummy):
-        RunThread(['xdg-open', self.currentFile]).start()
+        subprocess.Popen( ['xdg-open', self.currentFile] )
 
     ConverterCommand = ['scala', "-cp", "~/workspace/lyric-matcher/target/scala-2.11/classes", "matcher.LyricConverter"]
     def runConverter(self, dummy):
-        RunThread(self.ConverterCommand).start()
+        subprocess.Popen(self.ConverterCommand)
         
     def displayLine(self, line):
         self.counter += 1
@@ -209,14 +209,6 @@ class LyricThread(Thread):
             for timer in self.lyricbar.pendingTimers:
                 timer.start()
     
-class RunThread(Thread):
-    def __init__(self, command):
-        Thread.__init__(self)
-        self.command = command
-        
-    def run(self):
-        subprocess.call(self.command)
-        
 if __name__ == "__main__":
     lyricbar = LyricBar()
     lyricbar.main()
