@@ -51,11 +51,14 @@ class LyricBar:
         else:
             return True  # keep checking
        
+    def getPlayers(self):
+        return [ str(self.bus.get_name_owner(x)) for x in self.bus.list_names() if x.startswith("org.mpris.MediaPlayer2") ]
+
     def isValidPlayersRunning(self): 
-        return not not pympris.available_players()
+        return not not self.getPlayers()
 
     def setupMediaPlayer(self): 
-        mediaplayer = pympris.MediaPlayer(list(pympris.available_players())[0], self.bus)
+        mediaplayer = pympris.MediaPlayer(self.getPlayers()[0], self.bus)
         mediaplayer.player.register_properties_handler(self.handle_properties_changes)
         mediaplayer.playlists.register_properties_handler(self.handle_properties_changes)
         mediaplayer.player.register_signal_handler('Seeked', self.seeked)
