@@ -6,18 +6,30 @@ from urllib.parse import unquote
 import dbus
 from dbus.mainloop.glib import DBusGMainLoop
 import pympris
+import os
 from threading import Timer, Thread
 from LrcParser import LrcParser
 import subprocess
 import time
 
 class LyricBar:
+
     def __init__(self):
         self.counter = 0 
         self.currentLine = ""
+        self.playerId = None
 
         dbus_loop = DBusGMainLoop()
         self.bus = dbus.SessionBus(mainloop=dbus_loop)
+
+        self.bus.add_signal_receiver(self.handlerNameOwnerChanged, 
+                                     dbus_interface="org.freedesktop.DBus", 
+                                     signal_name="NameOwnerChanged")
+
+        self.bus.add_signal_receiver(self.handle_properties_changes_2, 
+                                     path = "/org/mpris/MediaPlayer2", 
+                                     dbus_interface = "org.freedesktop.DBus.Properties", 
+                                     signal_name = "PropertiesChanged")
         
         self.menu = Gtk.Menu()
         self.indie = appindicator.Indicator.new(
@@ -34,7 +46,7 @@ class LyricBar:
         self.playerSetup()
 
     def playerSetup(self):
-        if self.getPlayers():
+        if self.getPlayerId():
             self.setupMediaPlayer()
             self.displayLine("Waiting for song change.")
         else:
@@ -43,23 +55,39 @@ class LyricBar:
             
     # =============================== MPRIS2 Part ===============================      
     def handlerCheckPlayer(self):
-        if self.getPlayers():
+        if self.getPlayerId():
             self.setupMediaPlayer()
             self.displayLine("Waiting for song change.")
             return False  # deregister the handler
         else:
             return True  # keep checking
+
+    def handlerNameOwnerChanged(self, name, new_owner, old_owner):
+        # first check whether the signal is about the right target or not
+        if self.playerId != str(name):
+            return
+        # If the playerId is no longer valid, then we keep checking for a new player
+        self.handlerCheckPlayer()
        
-    def getPlayers(self):
-        return [ str(self.bus.get_name_owner(x)) for x in self.bus.list_names() if x.startswith("org.mpris.MediaPlayer2") ]
+    def getPlayerId(self):
+        players = [ str(self.bus.get_name_owner(x)) for x in self.bus.list_names() if x.startswith("org.mpris.MediaPlayer2") ]
+        if players:
+            self.playerId = players[0]
+        return self.playerId
 
     def setupMediaPlayer(self): 
-        mediaplayer = pympris.MediaPlayer(self.getPlayers()[0], self.bus)
+        mediaplayer = pympris.MediaPlayer(self.playerId, self.bus)
         mediaplayer.player.register_properties_handler(self.handle_properties_changes)
         mediaplayer.playlists.register_properties_handler(self.handle_properties_changes)
         mediaplayer.player.register_signal_handler('Seeked', self.seeked)
         self.mediaplayer = mediaplayer
         self.disconnect.show()
+
+    def handle_properties_changes_2(self, changed_props, invalidated_props):
+        print("===== changed props")
+        print(changed_props)
+        print("===== invalidated props")
+        print(invalidated_props)
 
     def handle_properties_changes(self, changed_props, invalidated_props):
         print("===== changed props")
