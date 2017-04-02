@@ -147,14 +147,9 @@ class LyricBar:
         self.openItem = Gtk.MenuItem("")
         self.openItem.connect("activate", self.openLyricsFile)
         m.append(self.openItem)
-        runItem = Gtk.MenuItem("Run Lyric Converter")
-        runItem.connect("activate", self.runConverter)
-        runItem.show()
-        m.append(runItem)
         self.disconnect = Gtk.MenuItem("Redetect player")
         self.disconnect.connect("activate", self.redetectPlayer)
         m.append(self.disconnect)
-        runItem = Gtk.MenuItem("Run Lyric Converter")
         quit_item = Gtk.MenuItem("Quit")
         quit_item.connect("activate", self.quit)
         quit_item.show()
@@ -176,10 +171,6 @@ class LyricBar:
     def openLyricsFile(self, dummy):
         subprocess.Popen( ['xdg-open', self.currentFile] )
 
-    ConverterCommand = ['scala', "-cp", "~/workspace/lyric-matcher/target/scala-2.11/classes", "matcher.LyricConverter"]
-    def runConverter(self, dummy):
-        subprocess.Popen(self.ConverterCommand)
-        
     def displayLine(self, line):
         self.counter += 1
         line = line.strip()
