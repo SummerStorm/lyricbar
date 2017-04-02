@@ -161,8 +161,7 @@ class LyricBar:
         self.playerSetup()
         
     def quit(self, dummy):
-        if hasattr(self, 'lyricThread'):
-            self.clearAllPendingTimers()
+        self.clearAllPendingTimers()
         Gtk.main_quit()
 
     def copyToClipboard(self, dummy):
