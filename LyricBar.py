@@ -16,8 +16,11 @@ class LyricBar:
 
     def __init__(self):
         self.counter = 0 
-        self.currentLine = ""
         self.playerId = None
+        self.currentLine = ""
+        self.currentFile = ""
+        self.pendingTimers = list()
+        self.lines = list()
 
         dbus_loop = DBusGMainLoop()
         self.bus = dbus.SessionBus(mainloop=dbus_loop)
@@ -38,9 +41,6 @@ class LyricBar:
         # create a menu
         self.populate_menu(self.menu)
         
-        self.currentFile = ""
-        self.pendingTimers = list()
-        self.lines = list()
         self.paused = False
         self.mediaplayer = None
         self.playerSetup()
